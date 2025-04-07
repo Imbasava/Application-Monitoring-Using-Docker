@@ -5,44 +5,50 @@ require('dotenv').config();
 // Set up Kafka consumer
 const kafka = new Kafka({
     clientId: 'log-analytics-platform',
-    brokers: ['kafka:9092'],  // Kafka service name from docker-compose.yml
+    brokers: ['kafka:9092'],
 });
 
 const consumer = kafka.consumer({ groupId: 'log-group' });
 
 // Function to save logs into PostgreSQL
 const saveLogToDB = async (log) => {
-    const { level, message, meta } = log;
+    const {
+        endpoint,
+        method,
+        timestamp,
+        message,
+        severity,         // default if not provided
+        log_type,  // default if not provided
+        response_time = null       // can be null if not applicable
+    } = log;
 
     try {
         await pool.query(`
-            INSERT INTO logs (level, message, meta)
-            VALUES ($1, $2, $3)
-        `, [level, message, meta]);
+            INSERT INTO logs (endpoint, method, timestamp, message, severity, log_type, response_time)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `, [endpoint, method, timestamp, message, severity, log_type, response_time]);
 
-        console.log(`Log stored: ${message}`);
+        console.log(`✅ Log stored in DB: ${endpoint} (${severity})`);
     } catch (err) {
-        console.error("Error inserting log into database:", err);
+        console.error("❌ Error inserting log into database:", err);
     }
 };
 
 // Kafka consumer logic
 const runConsumer = async () => {
     await consumer.connect();
-    console.log("Kafka Consumer connected!");
+    console.log("🔌 Kafka Consumer connected!");
 
-    // Subscribe to multiple topics (api-logs, api-errors)
     await consumer.subscribe({ topic: 'api-logs', fromBeginning: true });
     await consumer.subscribe({ topic: 'api-errors', fromBeginning: true });
 
     await consumer.run({
         eachMessage: async ({ topic, partition, message }) => {
             const log = JSON.parse(message.value.toString());
-            console.log(`Received log from topic ${topic}:`, log);
+            console.log(`📥 Received log from topic ${topic}:`, log);
             await saveLogToDB(log);
         },
     });
 };
 
-// Start consumer
 runConsumer().catch(console.error);
