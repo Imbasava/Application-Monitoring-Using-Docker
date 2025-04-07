@@ -2,99 +2,78 @@ const express = require('express');
 const app = express();
 const port = 3000;
 const cors = require('cors');
-//const kafkaProducer = require('../kafka/producer');  // Import Kafka producer
 const kafkaProducer = require('/usr/src/app/kafka/producer');
 
 app.use(cors());  // Enable CORS
 
-// Sample API endpoints with meaningful names
-app.get('/api/healthcheck', async (req, res) => {
-    const log = {
-        endpoint: '/api/healthcheck',
-        method: 'GET',
+// Helper to generate log
+const generateLog = (endpoint, method, message, severity, log_type, startTime) => {
+    return {
+        endpoint,
+        method,
         timestamp: new Date().toISOString(),
-        message: 'Request received at /api/healthcheck'
+        message,
+        severity,
+        log_type,
+        response_time: Date.now() - startTime   // ✅ NOT duration
     };
+};
 
-    // Send the log to Kafka (general logs)
+
+
+app.get('/api/healthcheck', async (req, res) => {
+    const startTime = Date.now();
+
+    const log = generateLog('/api/healthcheck', 'GET', 'Request received at /api/healthcheck', 'INFO', 'application', startTime);
     await kafkaProducer.sendLogToKafka(log, 'api-logs');
 
     res.send('API is up and running');
 });
 
 app.get('/api/users', async (req, res) => {
-    const log = {
-        endpoint: '/api/users',
-        method: 'GET',
-        timestamp: new Date().toISOString(),
-        message: 'Request received at /api/users'
-    };
+    const startTime = Date.now();
 
-    // Send the log to Kafka (general logs)
+    const log = generateLog('/api/users', 'GET', 'Request received at /api/users', 'INFO', 'application', startTime);
     await kafkaProducer.sendLogToKafka(log, 'api-logs');
 
     res.send('List of all users');
 });
 
 app.get('/api/products', async (req, res) => {
-    const log = {
-        endpoint: '/api/products',
-        method: 'GET',
-        timestamp: new Date().toISOString(),
-        message: 'Request received at /api/products'
-    };
+    const startTime = Date.now();
 
-    // Send the log to Kafka (general logs)
+    const log = generateLog('/api/products', 'GET', 'Request received at /api/products', 'INFO', 'application', startTime);
     await kafkaProducer.sendLogToKafka(log, 'api-logs');
 
     res.send('List of all products');
 });
 
 app.get('/api/orders', async (req, res) => {
-    const log = {
-        endpoint: '/api/orders',
-        method: 'GET',
-        timestamp: new Date().toISOString(),
-        message: 'Request received at /api/orders'
-    };
+    const startTime = Date.now();
 
-    // Send the log to Kafka (general logs)
+    const log = generateLog('/api/orders', 'GET', 'Request received at /api/orders', 'INFO', 'application', startTime);
     await kafkaProducer.sendLogToKafka(log, 'api-logs');
 
     res.send('List of all orders');
 });
 
 app.get('/api/traffic', async (req, res) => {
-    const log = {
-        endpoint: '/api/traffic',
-        method: 'GET',
-        timestamp: new Date().toISOString(),
-        message: 'Request received at /api/traffic'
-    };
+    const startTime = Date.now();
 
-    // Send the log to Kafka (general logs)
+    const log = generateLog('/api/traffic', 'GET', 'Request received at /api/traffic', 'INFO', 'application', startTime);
     await kafkaProducer.sendLogToKafka(log, 'api-logs');
 
     res.send('API traffic data');
 });
 
 app.get('/api/errors', async (req, res) => {
-    const log = {
-        endpoint: '/api/errors',
-        method: 'GET',
-        timestamp: new Date().toISOString(),
-        message: 'Request received at /api/errors'
-    };
+    const startTime = Date.now();
 
-    // Simulate an error and log it to a separate topic
-    const errorLog = {
-        endpoint: '/api/errors',
-        method: 'GET',
-        timestamp: new Date().toISOString(),
-        message: 'Error: Request failed at /api/errors'
-    };
+    const log = generateLog('/api/errors', 'GET', 'Request received at /api/errors', 'INFO', 'application', startTime);
+    await kafkaProducer.sendLogToKafka(log, 'api-logs');
 
-    // Send the error log to Kafka (error logs)
+    // Simulate an error log
+    const errorLog = generateLog('/api/errors', 'GET', 'Error: Request failed at /api/errors', 'ERROR', 'error', startTime);
     await kafkaProducer.sendLogToKafka(errorLog, 'api-errors');
 
     res.send('List of most frequent errors');
