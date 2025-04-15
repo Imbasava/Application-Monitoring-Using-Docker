@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Tester</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f9;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #ddd;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 10px;
+      width: 80%;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      overflow: auto;
+      max-height: 200px;
+    }
+  </style>
+</head>
+<body>
+  <h1>API Tester</h1>
+  <button onclick="callApi('/api/healthcheck')">Healthcheck</button>
+  <button onclick="callApi('/api/users')">Users</button>
+  <button onclick="callApi('/api/products')">Products</button>
+  <button onclick="callApi('/api/orders')">Orders</button>
+  <button onclick="callApi('/api/traffic')">Traffic</button>
+  <button onclick="callApi('/api/errors')">Errors</button>
+  
+  <div id="output"></div>
+
+  <script>
+    const baseURL = "http://localhost:3000"; // Backend URL
+
+    async function callApi(endpoint) {
+      try {
+        const response = await fetch(`${baseURL}${endpoint}`);
+        const data = await response.text(); // Get the response as text
+        document.getElementById('output').innerHTML = `
+          <p><strong>Endpoint:</strong> ${endpoint}</p>
+          <p><strong>Response:</strong> ${data}</p>
+        `;
+      } catch (error) {
+        document.getElementById('output').innerHTML = `
+          <p><strong>Error:</strong> ${error.message}</p>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
