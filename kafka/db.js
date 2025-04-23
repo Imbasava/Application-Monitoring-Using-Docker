@@ -10,6 +10,8 @@ const pool = new Pool({
 });
 
 // Test connection
+
+
 const connectDB = async () => {
     try {
         const client = await pool.connect();
