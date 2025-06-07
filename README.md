@@ -34,18 +34,21 @@ A real-time, Dockerized monitoring platform that collects, processes, stores, an
 ---
 
 ## 🧱 Architecture
-Client (curl/requests)
-↓
-REST API Server
-↓
-Kafka Producer → Kafka Topics
-↓
-Kafka Consumer (JS)
-↓
-PostgreSQL
-↓
-Grafana
 
+
+The data flows through the platform in the following sequence:
+
+- **Client (curl/requests)**
+  - `↓`
+- **REST API Server**
+  - `↓`
+- **Kafka Producer → Kafka Topics**
+  - `↓`
+- **Kafka Consumer (JS)**
+  - `↓`
+- **PostgreSQL**
+  - `↓`
+- **Grafana**
       
 > Optional: Replace this diagram with an image like `./architecture.png` if available.
 
