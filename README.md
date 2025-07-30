@@ -1,6 +1,9 @@
 # 🔍 Log Analytics Platform
 
 A real-time, Dockerized monitoring platform that collects, processes, stores, and visualizes logs from a REST API using Kafka, PostgreSQL, and Grafana.
+Kafka handles high-throughput log streaming, PostgreSQL stores structured metrics, and Grafana provides real-time performance dashboards.
+The entire system is containerized with Docker for easy deployment and scalability.
+Ideal for modern DevOps workflows requiring real-time observability and insights into API performance.
 
 ---
 
